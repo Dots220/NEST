@@ -1,4 +1,5 @@
-export class CreateProductDto {
+export class CreateUserDto {
+   readonly id: number
    readonly name: string
    readonly age: number
 }
