@@ -1,5 +1,4 @@
 import { HttpStatus } from '@nestjs/common'
-import { User } from '../schemas/user.schema'
 
 export interface DeleteUser {
    status: HttpStatus
@@ -8,7 +7,12 @@ export interface DeleteUser {
 }
 
 export interface GetUserByIdResponse {
-   data?: User
+   data?: any
    status: HttpStatus
    error?: string
+}
+
+export interface CreateUser {
+   email: string
+   password: string
 }

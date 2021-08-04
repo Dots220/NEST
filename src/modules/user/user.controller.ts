@@ -1,43 +1,33 @@
 import {
    Body,
    Controller,
-   Delete,
    Get,
-   Header,
-   HttpCode,
+   HttpException,
    HttpStatus,
-   Param,
    Post,
-   Query,
 } from '@nestjs/common'
-import { CreateUserDto } from './create-user.dto'
 import { UserService } from './user.service'
-import { User } from './schemas/user.schema'
-import { DeleteUser, GetUserByIdResponse } from './types/user.types'
+import { CreateUser } from './types/user.types'
 
 @Controller('user')
 export class UserController {
    constructor(private readonly userService: UserService) {}
 
-   @Get()
-   getAll(): Promise<User[]> {
-      return this.userService.getAll()
-   }
-
-   @Get(':id')
-   getOne(@Param('id') id: string): Promise<User> {
-      return this.userService.getById(id)
-   }
-
    @Post()
-   @HttpCode(HttpStatus.CREATED)
-   @Header('Cache-Control', 'none')
-   create(@Body() createUser: CreateUserDto) {
-      return this.userService.create(createUser)
+   public async create(@Body() body: CreateUser) {
+      const check = await this.userService.findOne({ email: body.email })
+      if (check) {
+         throw new HttpException(
+            'Пользователь с таким email существует',
+            HttpStatus.BAD_REQUEST,
+         )
+      }
+
+      return this.userService.create(body)
    }
 
-   @Delete(':id')
-   remove(@Param('id') id: string): Promise<User> {
-      return this.userService.deleteUserById(id)
+   @Get()
+   async getAll() {
+      return this.userService.getAll()
    }
 }

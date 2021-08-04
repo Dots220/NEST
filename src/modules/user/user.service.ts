@@ -1,29 +1,21 @@
-import { Injectable } from '@nestjs/common'
-import { CreateUserDto } from './create-user.dto'
-import { User, UserDocument } from './schemas/user.schema'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { User } from './user.entity'
+import { Repository } from 'typeorm'
+import { CreateUser } from './types/user.types'
 
 @Injectable()
 export class UserService {
    constructor(
-      @InjectModel(User.name) private userModel: Model<UserDocument>,
+      @InjectRepository(User)
+      private usersRepository: Repository<User>,
    ) {}
 
-   public async getAll(): Promise<User[]> {
-      return this.userModel.find().exec()
+   async create(user: CreateUser) {
+      return this.usersRepository.save(user)
    }
 
-   public async getById(id: string): Promise<User> {
-      return this.userModel.findById(id)
-   }
-
-   public async create(userDto: CreateUserDto) {
-      const newUser = new this.userModel(userDto)
-      return newUser.save()
-   }
-
-   async deleteUserById(id: string): Promise<User> {
-      return this.userModel.findByIdAndDelete(id)
+   async getAll() {
+      return this.usersRepository.find()
    }
 }

@@ -2,14 +2,21 @@ import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UserModule } from '../modules/user/user.module'
-import { MongooseModule } from '@nestjs/mongoose'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from '../modules/user/user.entity'
 
 @Module({
    imports: [
       UserModule,
-      MongooseModule.forRoot(
-         'mongodb+srv://Andrey:qweqweasdasd@cluster0.iab1f.mongodb.net/fullstack-app?retryWrites=true&w=majority',
-      ),
+      TypeOrmModule.forRoot({
+         type: 'postgres',
+         host: 'localhost',
+         port: 3010,
+         username: 'postgres',
+         password: 'qQ12345!',
+         entities: [User],
+         synchronize: true,
+      }),
    ],
    controllers: [AppController],
    providers: [AppService],
