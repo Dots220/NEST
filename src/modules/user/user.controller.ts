@@ -1,26 +1,25 @@
 import {
    Body,
    Controller,
+   Delete,
    Get,
    HttpException,
    HttpStatus,
+   Param,
    Post,
 } from '@nestjs/common'
 import { UserService } from './user.service'
-import { CreateUser } from './types/user.types'
+import { CreateUserDto } from './dto/create-user.dto'
 
 @Controller('user')
 export class UserController {
-   constructor(private readonly userService: UserService) {}
+   constructor(private userService: UserService) {}
 
    @Post()
-   public async create(@Body() body: CreateUser) {
-      const check = await this.userService.findOne({ email: body.email })
-      if (check) {
-         throw new HttpException(
-            'Пользователь с таким email существует',
-            HttpStatus.BAD_REQUEST,
-         )
+   public async create(@Body() body: CreateUserDto) {
+      const user = await this.userService.findByEmail(body.email)
+      if (user) {
+         throw new HttpException('User is exist', HttpStatus.BAD_REQUEST)
       }
 
       return this.userService.create(body)
@@ -29,5 +28,14 @@ export class UserController {
    @Get()
    async getAll() {
       return this.userService.getAll()
+   }
+
+   @Delete('/:id')
+   async delete(@Param('id') id: number) {
+      const user = await this.userService.findById(id)
+      if (!user) {
+         throw new HttpException('User is not exist', HttpStatus.NOT_FOUND)
+      }
+      return this.userService.delete(id)
    }
 }

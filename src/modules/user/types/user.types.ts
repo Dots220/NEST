@@ -11,8 +11,3 @@ export interface GetUserByIdResponse {
    status: HttpStatus
    error?: string
 }
-
-export interface CreateUser {
-   email: string
-   password: string
-}
