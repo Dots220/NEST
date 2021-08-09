@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { getConnection, Repository } from 'typeorm'
 import { CreateTodoDto } from './dto/create-todo.dto'
 import { Todo } from './todo.entity'
-import { EditTodoDto } from './dto/edit-todo.dto'
+import { User } from '../user/user.entity'
 
 @Injectable()
 export class TodoService {
@@ -12,16 +12,40 @@ export class TodoService {
       private todosRepository: Repository<Todo>,
    ) {}
 
-   async create(todo: CreateTodoDto) {
-      return this.todosRepository.save(todo)
+   async create(todo: CreateTodoDto, user: User) {
+      return this.todosRepository.save({
+         ...todo,
+         user,
+      })
    }
 
    async getAll() {
       return this.todosRepository.find()
    }
 
-   public async edit(id: number, body) {
-      const result = await this.todosRepository.update({ id }, body)
-      return result
+   async getAllByUser(id: number) {
+      return this.todosRepository.find({ where: { userId: id } })
+   }
+
+   public edit(id: number, body) {
+      return this.todosRepository.update({ id }, body)
+   }
+
+   public getTodoByUser(id: number) {
+      return this.todosRepository.find({ where: { userId: id } })
+   }
+
+   public getTodoById(idTodo: number) {
+      return this.todosRepository.findOne({ where: { id: idTodo } })
+   }
+
+   public async deleteById(todoId: number, userId: number) {
+      await getConnection()
+         .createQueryBuilder()
+         .delete()
+         .from(Todo)
+         .where('id = :todoId', { todoId })
+         .andWhere('userId = :userId', { userId })
+         .execute()
    }
 }

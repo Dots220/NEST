@@ -1,20 +1,10 @@
 import { Module } from '@nestjs/common'
 import { AuthController } from './auth.controller'
-import { AuthService } from './auth.service'
-import { JwtModule } from '@nestjs/jwt'
 import { UserSharedModule } from '../user/user-shared.module'
+import { AuthSharedModule } from './auth-shared.module'
 
 @Module({
    controllers: [AuthController],
-   providers: [AuthService],
-   imports: [
-      UserSharedModule,
-      JwtModule.register({
-         secret: process.env.PRIVATE_KEY || 'SECRET',
-         signOptions: {
-            expiresIn: '24h',
-         },
-      }),
-   ],
+   imports: [AuthSharedModule, UserSharedModule],
 })
 export class AuthModule {}

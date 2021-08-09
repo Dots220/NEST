@@ -15,7 +15,7 @@ export class AuthService {
       }
    }
 
-   public decodeToken(token: string) {
+   public async decodeToken(token: string) {
       if (!token) {
          return {
             error: 'Unauthorized',

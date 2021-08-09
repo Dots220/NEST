@@ -1,16 +1,13 @@
 import {
    Body,
    Controller,
-   Get,
    Post,
-   Headers,
    HttpException,
    HttpStatus,
 } from '@nestjs/common'
 import { CreateUserDto } from '../user/dto/create-user.dto'
 import { AuthService } from './auth.service'
 import { UserService } from '../user/user.service'
-import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcryptjs'
 
 @Controller('auth')
@@ -18,7 +15,6 @@ export class AuthController {
    constructor(
       private authService: AuthService,
       private userService: UserService,
-      private jwtService: JwtService,
    ) {}
 
    @Post('/login')
