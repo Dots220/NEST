@@ -12,9 +12,6 @@ export class User {
    @Column()
    password: string
 
-   @Column({ default: null })
-   phone: string
-
    @OneToMany(() => Todo, (todo) => todo.user)
    todos: Todo[]
 }
