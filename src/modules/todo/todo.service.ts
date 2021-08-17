@@ -12,11 +12,15 @@ export class TodoService {
       private todosRepository: Repository<Todo>,
    ) {}
 
-   async create(todo: CreateTodoDto, user: User) {
-      return this.todosRepository.save({
-         ...todo,
+   public async create(todoPayload: CreateTodoDto, user: User): Promise<Todo> {
+      const todo = await this.todosRepository.save({
+         ...todoPayload,
          user,
       })
+
+      delete todo['user']
+
+      return todo
    }
 
    async getAll() {
@@ -24,19 +28,29 @@ export class TodoService {
    }
 
    async getAllByUser(id: number) {
-      return this.todosRepository.find({ where: { userId: id } })
+      return this.todosRepository.find({
+         where: {
+            user: {
+               id,
+            },
+         },
+      })
    }
 
-   public edit(id: number, body) {
-      return this.todosRepository.update({ id }, body)
+   public async edit(id: number, userId: number, body) {
+      // return this.todosRepository.update({ id }, body)
+
+      await getConnection()
+         .createQueryBuilder()
+         .update(User)
+         .set(body)
+         .where('id = :id', { id })
+         .andWhere()
+         .execute()
    }
 
-   public getTodoByUser(id: number) {
-      return this.todosRepository.find({ where: { userId: id } })
-   }
-
-   public getTodoById(idTodo: number) {
-      return this.todosRepository.findOne({ where: { id: idTodo } })
+   public getTodoById(todoId: number) {
+      return this.todosRepository.findOne({ where: { id: todoId } })
    }
 
    public async deleteById(todoId: number, userId: number) {

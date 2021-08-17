@@ -1,18 +1,9 @@
-import {
-   Column,
-   Entity,
-   ManyToOne,
-   OneToMany,
-   PrimaryGeneratedColumn,
-} from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from '../user/user.entity'
+import { Exclude } from 'class-transformer'
 
 @Entity({ name: 'todos' })
 export class Todo {
-   public constructor(todo) {
-      Object.assign(this, todo)
-   }
-
    @PrimaryGeneratedColumn()
    id: number
 
@@ -24,4 +15,8 @@ export class Todo {
 
    @ManyToOne(() => User, (user) => user.todos)
    user: User
+
+   public constructor(todo) {
+      Object.assign(this, todo)
+   }
 }

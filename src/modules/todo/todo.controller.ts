@@ -7,12 +7,12 @@ import {
    Put,
    Headers,
    Delete,
+   HttpStatus,
 } from '@nestjs/common'
 import { TodoService } from './todo.service'
 import { CreateTodoDto } from './dto/create-todo.dto'
 import { AuthService } from '../auth/auth.service'
 import { UserService } from '../user/user.service'
-import retryTimes = jest.retryTimes
 
 @Controller('todo')
 export class TodoController {
@@ -33,19 +33,32 @@ export class TodoController {
    }
 
    @Get()
-   public async getTodos(@Param() params) {
-      return await this.todoService.getAll()
-   }
-
-   @Get()
    public async getTodosByUserId(@Headers() headers, @Param() params) {
       const userId = await this.authService.decodeToken(headers.token)
+      if (!userId) {
+         return {
+            error: 'Unauthorized',
+            status: HttpStatus.UNAUTHORIZED,
+         }
+      }
       return await this.todoService.getAllByUser(userId)
    }
 
    @Put('/:id')
-   public async editTodo(@Body() body, @Param() params) {
-      return await this.todoService.edit(params.id, body)
+   public async editTodo(@Body() body, @Param() params, @Headers() headers) {
+      const userId = await this.authService.decodeToken(headers.token)
+      /*console.log(userId)
+      console.log('params:', params)
+      const todos = await this.todoService.getAllByUser(userId)
+      const check = todos.find((todo) => todo.id == params.id)
+      console.log('check:', check)
+      console.log('body:', body)*/
+
+      if (check) {
+         console.log('Работает')
+         return await this.todoService.edit(params.id, body)
+      }
+      throw 'Чужая todo'
    }
 
    @Delete('/:id')
