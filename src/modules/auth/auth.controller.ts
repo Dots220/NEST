@@ -9,6 +9,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto'
 import { AuthService } from './auth.service'
 import { UserService } from '../user/user.service'
 import * as bcrypt from 'bcryptjs'
+import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,7 @@ export class AuthController {
       private userService: UserService,
    ) {}
 
+   @ApiOperation({ summary: 'Вход в аккаунт' })
    @Post('/login')
    public async login(@Body() body: CreateUserDto) {
       const user = await this.userService.findByEmail(body.email)
@@ -32,6 +34,7 @@ export class AuthController {
       )
    }
 
+   @ApiOperation({ summary: 'Регистрация' })
    @Post('/registration')
    public async registration(@Body() body: CreateUserDto) {
       const candidate = await this.userService.findByEmail(body.email)

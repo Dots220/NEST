@@ -28,13 +28,22 @@ export class TodoService {
    }
 
    async getAllByUser(id: number) {
-      return this.todosRepository.find({
-         where: {
-            user: {
-               id,
-            },
-         },
-      })
+      // return this.todosRepository.find({
+      //    where: {
+      //       user: {
+      //          id,
+      //       },
+      //    },
+      // })
+
+      const todos = await getConnection()
+         .createQueryBuilder()
+         .select('todos')
+         .from(Todo, 'todos')
+         .where('todos.userId = :id', { id })
+         .orderBy('todos.id')
+         .getMany()
+      return todos
    }
 
    public async edit(id: number, userId: number, body) {
@@ -42,10 +51,10 @@ export class TodoService {
 
       await getConnection()
          .createQueryBuilder()
-         .update(User)
+         .update(Todo)
          .set(body)
          .where('id = :id', { id })
-         .andWhere()
+         .andWhere('userId = :userId', { userId })
          .execute()
    }
 
